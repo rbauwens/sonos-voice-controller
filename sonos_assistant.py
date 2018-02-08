@@ -47,30 +47,19 @@ def power_off_pi():
     subprocess.call('sudo shutdown now', shell=True)
 
 
-def reboot_pi():
-    aiy.audio.say('See you in a bit!')
-    subprocess.call('sudo reboot', shell=True)
-
-
-def say_ip():
-    print("I'm here!")
-    ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
-    aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'))
-
-
 def say_whats_playing():
     sonos_class = sonos.Sonos()
-    current_track = sonos_class.getCurrentTrack()
+    current_track = sonos_class.get_current_track()
     print("current_track: ", current_track)
     aiy.audio.say('Sonos is currently playing %s' % current_track)
 
 def play_next():
     sonos_class = sonos.Sonos()
-    rc = sonos_class.nextTrack()
+    rc = sonos_class.next_track()
     if rc:
         aiy.audio.say('Playing next track')
     else:
-        aiy.audio.say('uh oh')
+        aiy.audio.say('''I can't do that right now''')
 
 def pause():
     sonos_class = sonos.Sonos()
@@ -78,15 +67,15 @@ def pause():
     if rc:
         aiy.audio.say('Paused')
     else:
-        aiy.audio.say('uh oh')
-    
+        aiy.audio.say('Unable to pause')
+
 def play():
     sonos_class = sonos.Sonos()
     rc = sonos_class.play()
     if rc:
         aiy.audio.say('Playing')
     else:
-        aiy.audio.say('uh oh')
+        aiy.audio.say('''I can't do that right now''')
 
 def process_event(assistant, event):
     status_ui = aiy.voicehat.get_status_ui()
@@ -104,12 +93,6 @@ def process_event(assistant, event):
         if text == 'power off':
             assistant.stop_conversation()
             power_off_pi()
-        elif text == 'reboot':
-            assistant.stop_conversation()
-            reboot_pi()
-        elif text == 'ip address':
-            assistant.stop_conversation()
-            say_ip()
         elif text == '''what's playing''':
             assistant.stop_conversation()
             say_whats_playing()
